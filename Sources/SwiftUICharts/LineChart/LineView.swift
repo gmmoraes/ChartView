@@ -10,6 +10,7 @@ import SwiftUI
 
 public struct LineView: View {
     @ObservedObject var data: ChartData
+    public var xAxisData: [CustomStringConvertible]?
     public var title: String?
     public var legend: String?
     public var style: ChartStyle
@@ -25,8 +26,11 @@ public struct LineView: View {
     @State private var opacity:Double = 0
     @State private var currentDataNumber: Double = 0
     @State private var hideHorizontalLines: Bool = false
+    @State private var currentXValue: CustomStringConvertible?
+
     
     public init(data: [Double],
+                xAxisData: [CustomStringConvertible]? = nil,
                 title: String? = nil,
                 legend: String? = nil,
                 style: ChartStyle = Styles.lineChartStyleOne,
@@ -34,6 +38,7 @@ public struct LineView: View {
                 legendSpecifier: String? = "%.2f") {
         
         self.data = ChartData(points: data)
+        self.xAxisData = xAxisData
         self.title = title
         self.legend = legend
         self.style = style
@@ -86,7 +91,7 @@ public struct LineView: View {
                     }
                     .frame(width: geometry.frame(in: .local).size.width, height: 240)
                     .offset(x: 0, y: 40 )
-                    MagnifierRect(currentNumber: self.$currentDataNumber, valueSpecifier: self.valueSpecifier)
+                    MagnifierRect(currentNumber: self.$currentDataNumber, currentXValue: self.$currentXValue, valueSpecifier: self.valueSpecifier)
                         .opacity(self.opacity)
                         .offset(x: self.dragLocation.x - geometry.frame(in: .local).size.width/2, y: 36)
                 }
@@ -116,6 +121,11 @@ public struct LineView: View {
         let index:Int = Int(floor((toPoint.x-15)/stepWidth))
         if (index >= 0 && index < points.count){
             self.currentDataNumber = points[index]
+            if let xAxisData = xAxisData,
+               (index >= 0 && index < xAxisData.count)
+            {
+                self.currentXValue = xAxisData[index]
+            }
             return CGPoint(x: CGFloat(index)*stepWidth, y: CGFloat(points[index])*stepHeight)
         }
         return .zero
@@ -125,7 +135,12 @@ public struct LineView: View {
 struct LineView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
-            LineView(data: [8,23,54,32,12,37,7,23,43], title: "Full chart", style: Styles.lineChartStyleOne)
+            LineView(
+                data: [8,23,54,32,12,37,7,23,43],
+                xAxisData: ["10-01-2013", "10-02-2013", "10-03-2013", "10-04-2013", "10-05-2013", "10-06-2013", "10-07-2013","10-08-2013","10-09-2013"], // New field
+                title: "Line chart",
+                legend: "Full screen"
+            )
             
             LineView(data: [282.502, 284.495, 283.51, 285.019, 285.197, 286.118, 288.737, 288.455, 289.391, 287.691, 285.878, 286.46, 286.252, 284.652, 284.129, 284.188], title: "Full chart", style: Styles.lineChartStyleOne)
             
