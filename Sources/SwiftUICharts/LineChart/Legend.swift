@@ -15,7 +15,8 @@ struct Legend: View {
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     var specifier: String = "%.2f"
     let padding:CGFloat = 3
-
+    public var legendColor: Color = Colors.LegendColor
+    public var legendText: Color = Colors.LegendText
     var stepWidth: CGFloat {
         if data.points.count < 2 {
             return 0
@@ -44,10 +45,10 @@ struct Legend: View {
             ForEach((0...4), id: \.self) { height in
                 HStack(alignment: .center){
                     Text("\(self.getYLegendSafe(height: height), specifier: specifier)").offset(x: 0, y: self.getYposition(height: height) )
-                        .foregroundColor(Colors.LegendText)
+                        .foregroundColor(legendText)
                         .font(.caption)
                     self.line(atHeight: self.getYLegendSafe(height: height), width: self.frame.width)
-                        .stroke(self.colorScheme == .dark ? Colors.LegendDarkColor : Colors.LegendColor, style: StrokeStyle(lineWidth: 1.5, lineCap: .round, dash: [5,height == 0 ? 0 : 10]))
+                        .stroke(legendColor, style: StrokeStyle(lineWidth: 1.5, lineCap: .round, dash: [5,height == 0 ? 0 : 10]))
                         .opacity((self.hideHorizontalLines && height != 0) ? 0 : 1)
                         .rotationEffect(.degrees(180), anchor: .center)
                         .rotation3DEffect(.degrees(180), axis: (x: 0, y: 1, z: 0))

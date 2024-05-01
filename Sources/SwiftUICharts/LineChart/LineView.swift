@@ -18,6 +18,9 @@ public struct LineView: View {
     public var valueSpecifier: String
     public var legendSpecifier: String
     public var showBackground: Bool
+    public var backgroundGradient: Gradient
+    public var legendColor: Color
+    public var legendText: Color
     
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @State private var showLegend = false
@@ -36,7 +39,10 @@ public struct LineView: View {
                 style: ChartStyle = Styles.lineChartStyleOne,
                 valueSpecifier: String? = "%.1f",
                 legendSpecifier: String? = "%.2f",
-                showBackground: Bool = true
+                showBackground: Bool = true,
+                backgroundGradient: Gradient = Gradient(colors: [Colors.GradientUpperBlue, .white]),
+                legendColor: Color = Colors.LegendColor,
+                legendText: Color = Colors.LegendText
     ) {
         
         self.data = ChartData(points: data)
@@ -48,6 +54,9 @@ public struct LineView: View {
         self.legendSpecifier = legendSpecifier!
         self.darkModeStyle = style.darkModeStyle != nil ? style.darkModeStyle! : Styles.lineViewDarkMode
         self.showBackground = showBackground
+        self.backgroundGradient = backgroundGradient
+        self.legendColor = legendColor
+        self.legendText = legendText
     }
     
     public var body: some View {
@@ -71,11 +80,14 @@ public struct LineView: View {
                             .foregroundColor(self.colorScheme == .dark ? self.darkModeStyle.backgroundColor : self.style.backgroundColor)
                         if(self.showLegend){
                             Legend(data: self.data,
-                                   frame: .constant(reader.frame(in: .local)), hideHorizontalLines: self.$hideHorizontalLines, specifier: legendSpecifier)
+                                   frame: .constant(reader.frame(in: .local)), hideHorizontalLines: self.$hideHorizontalLines, specifier: legendSpecifier, legendColor: legendColor,
+                                   legendText: legendText
+                            )
                                 .transition(.opacity)
                                 .animation(Animation.easeOut(duration: 1).delay(1))
                         }
-                        Line(data: self.data,
+                        Line(backgroundGradient: backgroundGradient,
+                             data: self.data,
                              frame: .constant(CGRect(x: 0, y: 0, width: reader.frame(in: .local).width - 30, height: reader.frame(in: .local).height + 25)),
                              touchLocation: self.$indicatorLocation,
                              showIndicator: self.$hideHorizontalLines,
