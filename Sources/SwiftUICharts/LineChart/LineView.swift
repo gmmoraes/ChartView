@@ -17,6 +17,7 @@ public struct LineView: View {
     public var darkModeStyle: ChartStyle
     public var valueSpecifier: String
     public var legendSpecifier: String
+    public var showBackground: Bool
     
     @Environment(\.colorScheme) var colorScheme: ColorScheme
     @State private var showLegend = false
@@ -27,7 +28,6 @@ public struct LineView: View {
     @State private var currentDataNumber: Double = 0
     @State private var hideHorizontalLines: Bool = false
     @State private var currentXValue: CustomStringConvertible?
-
     
     public init(data: [Double],
                 xAxisData: [CustomStringConvertible]? = nil,
@@ -35,7 +35,9 @@ public struct LineView: View {
                 legend: String? = nil,
                 style: ChartStyle = Styles.lineChartStyleOne,
                 valueSpecifier: String? = "%.1f",
-                legendSpecifier: String? = "%.2f") {
+                legendSpecifier: String? = "%.2f",
+                showBackground: Bool = true
+    ) {
         
         self.data = ChartData(points: data)
         self.xAxisData = xAxisData
@@ -45,6 +47,7 @@ public struct LineView: View {
         self.valueSpecifier = valueSpecifier!
         self.legendSpecifier = legendSpecifier!
         self.darkModeStyle = style.darkModeStyle != nil ? style.darkModeStyle! : Styles.lineViewDarkMode
+        self.showBackground = showBackground
     }
     
     public var body: some View {
@@ -78,7 +81,7 @@ public struct LineView: View {
                              showIndicator: self.$hideHorizontalLines,
                              minDataValue: .constant(nil),
                              maxDataValue: .constant(nil),
-                             showBackground: false,
+                             showBackground: showBackground,
                              gradient: self.style.gradientColor
                         )
                         .offset(x: 30, y: 0)
