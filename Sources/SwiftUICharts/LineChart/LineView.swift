@@ -96,6 +96,7 @@ public struct LineView: View {
                              showBackground: showBackground,
                              gradient: self.style.gradientColor
                         )
+                        .padding(.leading, getLineStartingPoint())
                         .offset(x: 30, y: 0)
                         .onAppear(){
                             self.showLegend = true
@@ -145,13 +146,21 @@ public struct LineView: View {
         }
         return .zero
     }
+    
+    func getLineStartingPoint() -> CGFloat {
+        guard let max = self.data.onlyPoints().max() else {
+            return 20
+        }
+        let str = String(max)
+        return CGFloat(str.count) + 20
+    }
 }
 
 struct LineView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             LineView(
-                data: [8,23,54,32,12,37,7,23,43],
+                data: [8222,23,54,32,12,37,7,23,43],
                 xAxisData: ["10-01-2013", "10-02-2013", "10-03-2013", "10-04-2013", "10-05-2013", "10-06-2013", "10-07-2013","10-08-2013","10-09-2013"], // New field
                 title: "Line chart",
                 legend: "Full screen"

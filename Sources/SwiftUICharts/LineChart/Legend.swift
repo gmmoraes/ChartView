@@ -78,7 +78,7 @@ struct Legend: View {
     
     func line(atHeight: CGFloat, width: CGFloat) -> Path {
         var hLine = Path()
-        hLine.move(to: CGPoint(x:5, y: (atHeight-min)*stepHeight))
+        hLine.move(to: CGPoint(x:getLineStartingPoint(), y: (atHeight-min)*stepHeight))
         hLine.addLine(to: CGPoint(x: width, y: (atHeight-min)*stepHeight))
         return hLine
     }
@@ -89,6 +89,14 @@ struct Legend: View {
         guard let min = points.min() else { return nil }
         let step = Double(max - min)/4
         return [min+step * 0, min+step * 1, min+step * 2, min+step * 3, min+step * 4]
+    }
+    
+    func getLineStartingPoint() -> CGFloat {
+        guard let max = self.data.onlyPoints().max() else {
+            return 20
+        }
+        let str = String(max)
+        return CGFloat(str.count) - 8
     }
 }
 
