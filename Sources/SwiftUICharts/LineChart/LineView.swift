@@ -88,7 +88,12 @@ public struct LineView: View {
                         }
                         Line(backgroundGradient: backgroundGradient,
                              data: self.data,
-                             frame: .constant(CGRect(x: 0, y: 0, width: reader.frame(in: .local).width - 30, height: reader.frame(in: .local).height + 25)),
+                             frame: .constant(
+                                CGRect(x: 0,
+                                       y: 0,
+                                       width: reader.frame(in: .local).width - getLineStartingPoint(),
+                                       height: reader.frame(in: .local).height + 25)
+                             ),
                              touchLocation: self.$indicatorLocation,
                              showIndicator: self.$hideHorizontalLines,
                              minDataValue: .constant(nil),
@@ -96,8 +101,8 @@ public struct LineView: View {
                              showBackground: showBackground,
                              gradient: self.style.gradientColor
                         )
-                        .padding(.leading, getLineStartingPoint())
-                        .offset(x: 30, y: 0)
+//                        .padding(.leading, getLineStartingPoint())
+                        .offset(x: getLineStartingPoint(), y: 0)
                         .onAppear(){
                             self.showLegend = true
                         }
@@ -109,7 +114,7 @@ public struct LineView: View {
                     .offset(x: 0, y: 40 )
                     MagnifierRect(currentNumber: self.$currentDataNumber, currentXValue: self.$currentXValue, valueSpecifier: self.valueSpecifier)
                         .opacity(self.opacity)
-                        .offset(x: self.dragLocation.x - geometry.frame(in: .local).size.width/2, y: 36)
+                        .offset(x: getMagnifierRectXPosition(screen: geometry.frame(in: .local).size), y: 36)
                 }
                 .frame(width: geometry.frame(in: .local).size.width, height: 240)
                 .gesture(DragGesture()
@@ -154,14 +159,20 @@ public struct LineView: View {
         let str = String(max)
         return CGFloat(str.count) + 20
     }
+    
+    func getMagnifierRectXPosition(screen: CGSize) -> CGFloat {
+        let defaultValue: CGFloat = self.dragLocation.x -  screen.width/2
+        let maxValue: CGFloat = screen.width/2 - 70
+        return min(defaultValue, maxValue)
+    }
 }
 
 struct LineView_Previews: PreviewProvider {
     static var previews: some View {
         Group {
             LineView(
-                data: [8222,23,54,32,12,37,7,23,43],
-                xAxisData: ["10-01-2013", "10-02-2013", "10-03-2013", "10-04-2013", "10-05-2013", "10-06-2013", "10-07-2013","10-08-2013","10-09-2013"], // New field
+                data: [0, 250],
+                xAxisData: ["10-01-2013", "10-02-2013"], // New field
                 title: "Line chart",
                 legend: "Full screen"
             )
